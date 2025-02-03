@@ -4,6 +4,7 @@ import com.bharath.flightreservation.entities.Flight;
 import com.bharath.flightreservation.repositories.FlightRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,5 +41,10 @@ public class FlightServiceImpl implements FlightService {
     @Override
     public List<Flight> getAllFlights() {
         return flightRepository.findAll();
+    }
+
+    @Override
+    public List<Flight> findFlights(String from, String to, Date departureDate) {
+        return flightRepository.findFlights(from, to, departureDate);
     }
 }
