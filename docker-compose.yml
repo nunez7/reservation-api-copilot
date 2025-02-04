@@ -1,21 +1,6 @@
 version: '3.8'
 
 services:
-  flighreservation-app:
-    image: openjdk:11
-    dockerfile: Dockerfile
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/flightreservation
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=
-    ports:
-      - "8080:8080"
-    volumes:
-      - .:/app
-    command: ["sh", "-c", "cd /app && ./mvnw spring-boot:run"]
-    depends_on:
-      - db
-
   mysql:
     image: mysql:8.0
     container_name: mysql-db
@@ -27,6 +12,20 @@ services:
     volumes:
       - db-data:/var/lib/mysql
       - ./sql-scripts:/docker-entrypoint-initdb.d
-
-volumes:
-  db-data:
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      interval: 10s
+      retries: 5
+  flighreservation-app:
+    image: openjdk:11
+    dockerfile: Dockerfile
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/flightreservation
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
