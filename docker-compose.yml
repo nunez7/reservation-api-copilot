@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  flighreservation-app:
+    image: openjdk:11
+    dockerfile: Dockerfile
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/flightreservation
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    command: ["sh", "-c", "cd /app && ./mvnw spring-boot:run"]
+    depends_on:
+      - db
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    environment:
+      - MYSQL_DATABASE=flightreservation
+      - MYSQL_ROOT_PASSWORD=
+    ports:
+      - "3307:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./sql-scripts:/docker-entrypoint-initdb.d
+
+volumes:
+  db-data:
